@@ -3,6 +3,7 @@
 int main(){
     std::function<scanning_callback> cb = [](access_point &ap){
          std::cout<<"Got AP:\t mac: "<<ap.mac_address<<std::endl;
+         std::cout<<"        \t time: "<<ap.timestamp<<std::endl;
          std::cout<<"        \t freq: "<<ap.frequency<<std::endl;
          std::cout<<"        \t signal: "<<ap.signal_strength<<std::endl;
          std::cout<<"        \t noise: "<<ap.signal_noise<<std::endl;

@@ -131,17 +131,17 @@ int wifi_scanner::scan(){
         access_point *ap=0;
 
         iw_init_event_stream(&stream, (char *) buffer, wrq.u.data.length);
+        double scan_time = 1e-9*(double)std::chrono::high_resolution_clock::now().time_since_epoch().count();
         do{
             /* Extract an event and print it */
             ret = iw_extract_event_stream(&stream, &iwe,range.we_version_compiled);
             if(ret > 0)
-                process_iw_event(&stream, &iwe, &ap);
+                process_iw_event(&stream, &iwe, &ap, scan_time);
         }while(ret > 0);
         // check if there is one last ap
         if(ap){
             ap_list[ap->mac_address] = *ap;
             scan_callback(*ap);
-            std::cout<<"that was the last one"<<std::endl;
         }
     }
     return(0);
@@ -149,20 +149,30 @@ int wifi_scanner::scan(){
 
 void wifi_scanner::process_iw_event(struct stream_descr *	stream,	/* Stream of events */
         struct iw_event *		event,	/* Extracted token */
-        access_point** ap){
+        access_point** ap,
+        double scan_time){
     char    buffer[128];    /* Temporary buffer */
      
     /* Now, let's decode the event */
     switch(event->cmd) {
-        case SIOCGIWAP:
-            // New AP in the stream!
+        case SIOCGIWAP:{
+            // if ap already points to something, then it means we finished processing an AP
             if(*ap){
                 ap_list[(*ap)->mac_address] = *(*ap);
                 scan_callback(*(*ap));
             }
-            *ap = new access_point();
-            (*ap)->mac_address = std::string(get_mac_address(&event->u.ap_addr, buffer));
-            break;
+            std::string mac_addr = std::string(get_mac_address(&event->u.ap_addr, buffer));
+            // if an AP with the given mac address already exists in our map, then just update
+            if (ap_list.find(mac_addr)!=ap_list.end()){
+                *ap = &ap_list[mac_addr];
+            }
+            // New AP in the stream!
+            else {
+                *ap = new access_point();
+                (*ap)->mac_address = mac_addr;
+            }
+            (*ap)->timestamp = scan_time;
+            break;}
         case SIOCGIWFREQ:
 	        (*ap)->frequency = iw_freq2float(&(event->u.freq));
             break;

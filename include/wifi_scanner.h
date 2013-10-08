@@ -13,6 +13,7 @@
 #include <string>
 #include <functional>
 #include "iwlib.h"
+#include <chrono>
 
 // ooutputs mac address as a string
 static inline char *
@@ -26,6 +27,7 @@ get_mac_address(const struct sockaddr *sap, char* bufp)
 class access_point{
     public:
        access_point();
+       double timestamp;
        std::string mac_address;
        double signal_strength;
        double signal_noise;
@@ -42,7 +44,7 @@ class wifi_scanner{
         bool init(std::string, const std::function<scanning_callback> &cb = nullptr);
         //void passive_scan(int milliseconds=1000);
         int scan();
-        void process_iw_event(struct stream_descr *	stream, struct iw_event * event, access_point **ap);
+        void process_iw_event(struct stream_descr *	stream, struct iw_event * event, access_point **ap, double scan_time);
         std::map<std::string, access_point> ap_list;
 
     private:

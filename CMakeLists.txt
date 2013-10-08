@@ -4,7 +4,7 @@ PROJECT(wifi_scanner)
 SET (CMAKE_MODULE_PATH "/usr/share/cmake/Modules")
 
 SET(CMAKE_BUILD_TYPE Release)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x -Os -fPIC")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -std=gnu++0x -Os -fPIC")
 
 FIND_LIBRARY( LIBIW_LIBRARY iw )
 FIND_PATH(LIBIW_INCLUDE_DIR NAMES iwlib.h)
