@@ -46,14 +46,18 @@ int wifi_scanner::scan(){
 
     if(iw_set_ext(socket_fd, interface_name.c_str(), SIOCSIWSCAN, &wrq) < 0){
         std::cout<<"Could not start scan: ";
-        if (errno == EBUSY)
-            std::cout<<"Device or resource busy.";
-        else if (errno == EPERM)
-            std::cout<<"Insufficient permissions.";
-        else
-            std::cout<<"iw_set_ext failed. errno:"<<errno<<std::endl;
-        std::cout<<std::endl;
-        return -1;
+        if (errno == EPERM){
+            std::cout<<"Insufficient permissions. THE REPORTED RESULTS WILL BE LEFT_OVERS FROM PREVIOUS SCANS";
+            std::cout<<std::endl;
+        }
+        else{
+            if (errno == EBUSY)
+                std::cout<<"Device or resource busy.";
+            else
+                std::cout<<"iw_set_ext failed. errno:"<<errno<<std::endl;
+            std::cout<<std::endl;
+            return -1;
+        }
     }
 
     timeout -= tv.tv_usec;
