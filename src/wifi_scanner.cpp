@@ -135,12 +135,13 @@ int wifi_scanner::scan(){
         access_point *ap=0;
 
         iw_init_event_stream(&stream, (char *) buffer, wrq.u.data.length);
-        double scan_time = 1e-9*(double)std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        std::chrono::duration<double> scan_time;
+        scan_time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now().time_since_epoch());
         do{
             /* Extract an event and print it */
             ret = iw_extract_event_stream(&stream, &iwe,range.we_version_compiled);
             if(ret > 0)
-                process_iw_event(&stream, &iwe, &ap, scan_time);
+                process_iw_event(&stream, &iwe, &ap, scan_time.count());
         }while(ret > 0);
         // check if there is one last ap
         if(ap){
