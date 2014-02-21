@@ -149,6 +149,7 @@ int wifi_scanner::scan(){
             scan_callback(*ap);
         }
     }
+    free(buffer);
     return(0);
 }
 
