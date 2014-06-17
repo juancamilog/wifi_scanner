@@ -29,8 +29,12 @@ class access_point{
        access_point();
        double timestamp;
        std::string mac_address;
-       double signal_strength;
-       double signal_noise;
+       int signal_strength;
+       int signal_quality;
+       int signal_noise;
+       int sensitivity;
+       int max_quality;
+       bool signal_updated;
        double frequency;
        std::string essid;
 };

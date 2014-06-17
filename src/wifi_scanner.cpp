@@ -176,6 +176,8 @@ void wifi_scanner::process_iw_event(struct stream_descr *	stream,	/* Stream of e
             else {
                 *ap = new access_point();
                 (*ap)->mac_address = mac_addr;
+                (*ap)->max_quality = range.max_qual.qual;
+                (*ap)->sensitivity = range.sensitivity;
             }
             (*ap)->timestamp = scan_time;
             break;}
@@ -184,8 +186,12 @@ void wifi_scanner::process_iw_event(struct stream_descr *	stream,	/* Stream of e
             break;
         case IWEVQUAL:
             if (event->u.qual.level != 0 || (event->u.qual.updated & (IW_QUAL_DBM | IW_QUAL_RCPI))) {
-              (*ap)->signal_noise = event->u.qual.noise;
-              (*ap)->signal_strength = event->u.qual.level;
+              (*ap)->signal_noise = static_cast<signed char>(event->u.qual.noise);
+              (*ap)->signal_strength = static_cast<signed char>(event->u.qual.level);
+              (*ap)->signal_quality = static_cast<int>(event->u.qual.qual);
+              (*ap)->signal_updated = true;
+            } else {
+              (*ap)->signal_updated = false;
             }
             break;
         case SIOCGIWESSID:
